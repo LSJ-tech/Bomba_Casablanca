@@ -1,0 +1,13 @@
+{
+  "name": "bombacasablanca-postulaciones-worker",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Worker de Cloudflare que recibe el formulario de postulación de Bomba Casablanca y lo envía por correo vía Resend",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

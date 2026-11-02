@@ -1,0 +1,11 @@
+name = "bombacasablanca-postulaciones"
+main = "src/index.js"
+compatibility_date = "2026-11-02"
+
+[vars]
+FROM_EMAIL = "postulaciones@bombacasablanca.devquad.cl"
+TO_EMAIL = "logan.silva.jara@gmail.com"
+ALLOWED_ORIGIN = "https://bombacasablanca.devquad.cl"
+
+# RESEND_API_KEY es secreto, no va aquí.
+# Se configura con: wrangler secret put RESEND_API_KEY

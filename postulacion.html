@@ -1,0 +1,95 @@
+---
+title: Postula | Bomba Casablanca - Segunda Compañía
+description: Postula como voluntario(a) de Bomba Casablanca, la Segunda Compañía del Cuerpo de Bomberos de Casablanca.
+nav: postulacion
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+{% include head.html %}
+</head>
+<body>
+
+{% include header.html %}
+
+<main>
+
+  <section class="hero-pagina">
+    <div class="container">
+      <h2>Postula a Bomba Casablanca</h2>
+      <p>Súmate como voluntario(a) de la Segunda Compañía del Cuerpo de Bomberos de Casablanca.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container-angosto">
+      <p style="margin-bottom: 2rem; color: var(--ink-soft);">
+        Completa este formulario y la compañía se pondrá en contacto contigo para los siguientes pasos del
+        proceso de ingreso. Todos los campos marcados con * son obligatorios.
+      </p>
+
+      <form id="form-postulacion" class="form-postulacion" novalidate>
+        <div class="campo campo-honeypot" aria-hidden="true">
+          <label for="website">No completar este campo</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="campo">
+          <label for="nombre">Nombre completo *</label>
+          <input type="text" id="nombre" name="nombre" required autocomplete="name">
+        </div>
+
+        <div class="campo-fila">
+          <div class="campo">
+            <label for="rut">RUT *</label>
+            <input type="text" id="rut" name="rut" required placeholder="12.345.678-9">
+          </div>
+          <div class="campo">
+            <label for="fecha_nacimiento">Fecha de nacimiento *</label>
+            <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+          </div>
+        </div>
+
+        <div class="campo-fila">
+          <div class="campo">
+            <label for="telefono">Teléfono *</label>
+            <input type="tel" id="telefono" name="telefono" required autocomplete="tel" placeholder="+56 9 1234 5678">
+          </div>
+          <div class="campo">
+            <label for="correo">Correo electrónico *</label>
+            <input type="email" id="correo" name="correo" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="direccion">Dirección *</label>
+          <input type="text" id="direccion" name="direccion" required autocomplete="street-address">
+        </div>
+
+        <div class="campo">
+          <label for="motivo">¿Por qué quieres ser voluntario(a) de Bomba Casablanca? *</label>
+          <textarea id="motivo" name="motivo" required></textarea>
+        </div>
+
+        <div class="campo campo-consentimiento">
+          <input type="checkbox" id="consentimiento" name="consentimiento" required>
+          <label for="consentimiento">Acepto que mis datos sean usados para evaluar esta postulación, según la <a href="privacidad.html" style="color: var(--blue); text-decoration: underline;">Política de Privacidad</a>. *</label>
+        </div>
+
+        <div id="form-mensaje" class="form-mensaje" role="status"></div>
+
+        <button type="submit" class="btn" id="form-enviar">Enviar Postulación</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- NOTA INTERNA: confirmar con la compañía el requisito de edad mínima para postular (el formulario hoy no lo
+       restringe) y cualquier otro requisito de ingreso que se quiera mostrar en esta página. Ver
+       VALIDACION-INSTITUCIONAL.md. -->
+
+</main>
+
+{% include footer.html %}
+<script src="js/postulacion.js"></script>
+</body>
+</html>

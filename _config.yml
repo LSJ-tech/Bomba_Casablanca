@@ -7,3 +7,4 @@ exclude:
   - tests
   - coverage
   - sonar-project.properties
+  - worker

@@ -17,6 +17,10 @@ placeholder inventado.
 | Política de Privacidad | Validación jurídica | Borrador base conforme a la Ley N° 19.628. | Revisión y validación formal por la directiva de la compañía; ajustar cuando entre en vigencia la Ley N° 21.719 (diciembre de 2026). | Media |
 | General | Dominio definitivo | Sitio en `bombacasablanca.devquad.cl` (subdominio de demo). | Compra de `bombacasablanca.cl` y fecha de migración una vez que la compañía apruebe el sitio. | Baja (futuro) |
 | General | Secreto SONAR_TOKEN | Repo y secreto configurados por el usuario (2026-11-02); falta verificar que el workflow de SonarCloud corra en verde tras el re-run. | Confirmar en la pestaña Actions que el run de "SonarCloud" termine en éxito. | Baja |
+| Postulación | Deploy del Worker (Cloudflare + Resend) | Código listo en `worker/` (recibe el formulario y envía el correo vía Resend). Falta desplegarlo: `wrangler login` (o token de API), `wrangler secret put RESEND_API_KEY`, `wrangler deploy` desde `worker/`. | Desplegar el Worker y confirmar que el dominio remitente (`FROM_EMAIL`, hoy `postulaciones@bombacasablanca.devquad.cl`) esté verificado en la cuenta de Resend — si no, cambiarlo por uno que sí lo esté. | **Alta** |
+| Postulación | URL del Worker en el frontend | `js/postulacion.js` tiene un endpoint de ejemplo (`POSTULACION_ENDPOINT`) sin configurar. | Reemplazarlo con la URL real que entregue `wrangler deploy` (o la ruta de dominio propio si se configura una). | **Alta** |
+| Postulación | Correo de destino | Hoy llega a `logan.silva.jara@gmail.com` (`TO_EMAIL` en `worker/wrangler.toml`), mientras la compañía no tenga uno propio. | Cambiar `TO_EMAIL` al correo oficial del Director(a) o de la compañía una vez exista. | Media |
+| Postulación | Requisitos de ingreso (edad mínima, etc.) | El formulario no restringe edad ni otros requisitos; solo pide los datos de contacto. | Confirmar con la compañía los requisitos reales de postulación para mostrarlos en la página. | Media |
 
 ## Cómo usar este archivo
 

@@ -1054,3 +1054,110 @@ section {
 .hero-ceremonial .btn + .btn-outline {
   margin-left: 0.8rem;
 }
+
+/* ---------- Formulario de Postulación ---------- */
+
+.form-postulacion {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.campo label {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+.campo input,
+.campo textarea {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #c7d4e2;
+  border-radius: 3px;
+  background: var(--ivory);
+  color: var(--ink);
+}
+
+.campo input:focus,
+.campo textarea:focus {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 1px;
+  border-color: var(--blue);
+}
+
+.campo textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.campo-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 600px) {
+  .campo-fila {
+    grid-template-columns: 1fr;
+  }
+}
+
+.campo-consentimiento {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.campo-consentimiento input {
+  width: auto;
+  margin-top: 0.2rem;
+}
+
+.campo-consentimiento label {
+  font-weight: 400;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+
+.campo-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form-mensaje {
+  padding: 0.9rem 1.1rem;
+  border-radius: 3px;
+  font-size: 0.92rem;
+  display: none;
+}
+
+.form-mensaje.visible {
+  display: block;
+}
+
+.form-mensaje.exito {
+  background: #e6f4ea;
+  color: #1e6b36;
+  border: 1px solid #b7ddc3;
+}
+
+.form-mensaje.error {
+  background: #fbe9e7;
+  color: #9c2c1f;
+  border: 1px solid #f0bcb4;
+}
+
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
