@@ -194,10 +194,12 @@ ul {
 
   .brand-text h1 {
     font-size: 1rem;
+    white-space: normal;
   }
 
   .brand-text span {
     font-size: 0.68rem;
+    white-space: normal;
   }
 }
 
