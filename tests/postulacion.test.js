@@ -17,7 +17,7 @@ function construirFormulario() {
       </div>
       <textarea id="motivo" name="motivo" required></textarea>
       <input type="checkbox" id="consentimiento" name="consentimiento" required>
-      <div id="form-mensaje" class="form-mensaje" role="status"></div>
+      <output id="form-mensaje" class="form-mensaje"></output>
       <button type="submit" id="form-enviar">Enviar Postulación</button>
     </form>
   `;

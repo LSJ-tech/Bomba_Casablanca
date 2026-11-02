@@ -4,13 +4,25 @@ function limpiarRut(rut) {
   return String(rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
 }
 
+// Agrega los puntos de miles sin regex (evita el riesgo de backtracking de un lookahead cuantificado).
+function agregarPuntosMiles(cuerpo) {
+  var resultado = '';
+  for (var i = 0; i < cuerpo.length; i++) {
+    var posicionDesdeDerecha = cuerpo.length - i;
+    resultado += cuerpo.charAt(i);
+    if (posicionDesdeDerecha > 1 && (posicionDesdeDerecha - 1) % 3 === 0) {
+      resultado += '.';
+    }
+  }
+  return resultado;
+}
+
 function formatearRut(rut) {
   var limpio = limpiarRut(rut);
   if (limpio.length < 2) return limpio;
   var cuerpo = limpio.slice(0, -1);
   var dv = limpio.slice(-1);
-  var cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  return cuerpoFormateado + '-' + dv;
+  return agregarPuntosMiles(cuerpo) + '-' + dv;
 }
 
 function validarRut(rut) {
@@ -25,11 +37,18 @@ function validarRut(rut) {
   var suma = 0;
   var multiplo = 2;
   for (var i = cuerpo.length - 1; i >= 0; i--) {
-    suma += parseInt(cuerpo.charAt(i), 10) * multiplo;
+    suma += Number.parseInt(cuerpo.charAt(i), 10) * multiplo;
     multiplo = multiplo < 7 ? multiplo + 1 : 2;
   }
   var resto = 11 - (suma % 11);
-  var dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : String(resto);
+  var dvEsperado;
+  if (resto === 11) {
+    dvEsperado = '0';
+  } else if (resto === 10) {
+    dvEsperado = 'K';
+  } else {
+    dvEsperado = String(resto);
+  }
   return dv === dvEsperado;
 }
 

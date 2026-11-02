@@ -3,7 +3,6 @@
 
 const REQUIRED_FIELDS = ['nombre', 'rut', 'fecha_nacimiento', 'telefono', 'correo', 'direccion', 'motivo'];
 const APODERADO_FIELDS = ['apoderado_nombre', 'apoderado_telefono', 'apoderado_correo'];
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function limpiarRut(rut) {
   return String(rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
@@ -21,11 +20,18 @@ function validarRut(rut) {
   let suma = 0;
   let multiplo = 2;
   for (let i = cuerpo.length - 1; i >= 0; i--) {
-    suma += parseInt(cuerpo.charAt(i), 10) * multiplo;
+    suma += Number.parseInt(cuerpo.charAt(i), 10) * multiplo;
     multiplo = multiplo < 7 ? multiplo + 1 : 2;
   }
   const resto = 11 - (suma % 11);
-  const dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : String(resto);
+  let dvEsperado;
+  if (resto === 11) {
+    dvEsperado = '0';
+  } else if (resto === 10) {
+    dvEsperado = 'K';
+  } else {
+    dvEsperado = String(resto);
+  }
   return dv === dvEsperado;
 }
 
@@ -40,6 +46,17 @@ function calcularEdad(fechaNacimiento, hoy) {
   return edad;
 }
 
+// Validación simple y sin regex (evita el riesgo de backtracking de un regex de email "completo").
+function esEmailValido(correo) {
+  const valor = String(correo || '');
+  if (/\s/.test(valor)) return false;
+  const arroba = valor.indexOf('@');
+  if (arroba <= 0 || arroba !== valor.lastIndexOf('@')) return false;
+  const dominio = valor.slice(arroba + 1);
+  const punto = dominio.indexOf('.');
+  return punto > 0 && punto < dominio.length - 1;
+}
+
 function corsHeaders(allowedOrigin) {
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
@@ -51,17 +68,17 @@ function corsHeaders(allowedOrigin) {
 function jsonResponse(body, status, allowedOrigin) {
   return new Response(JSON.stringify(body), {
     status: status,
-    headers: Object.assign({ 'Content-Type': 'application/json' }, corsHeaders(allowedOrigin))
+    headers: { 'Content-Type': 'application/json', ...corsHeaders(allowedOrigin) }
   });
 }
 
 function escapeHtml(value) {
   return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
 const CAMPOS_TABLA = [
@@ -191,6 +208,85 @@ function buildEmailText(data, esMenor) {
   );
 }
 
+// Valida los datos recibidos. Devuelve { error, field? } si algo falla, o { esMenor } si todo está bien.
+function validarPostulacion(data) {
+  for (const field of REQUIRED_FIELDS) {
+    if (!data[field] || !String(data[field]).trim()) {
+      return { error: 'missing_field', field: field };
+    }
+  }
+
+  if (!esEmailValido(data.correo)) {
+    return { error: 'invalid_email' };
+  }
+
+  if (!validarRut(data.rut)) {
+    return { error: 'invalid_rut' };
+  }
+
+  if (Number.isNaN(new Date(data.fecha_nacimiento + 'T00:00:00').getTime())) {
+    return { error: 'invalid_birthdate' };
+  }
+
+  // La edad real (no el "tipo" que mande el cliente) decide si hace falta apoderado/tutor.
+  const esMenor = calcularEdad(data.fecha_nacimiento) < 18;
+  if (!esMenor) {
+    return { esMenor: false };
+  }
+
+  for (const field of APODERADO_FIELDS) {
+    if (!data[field] || !String(data[field]).trim()) {
+      return { error: 'missing_field', field: field };
+    }
+  }
+  if (!esEmailValido(data.apoderado_correo)) {
+    return { error: 'invalid_apoderado_email' };
+  }
+
+  return { esMenor: true };
+}
+
+async function enviarCorreoPostulacion(data, esMenor, env) {
+  const resendRes = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + env.RESEND_API_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: env.FROM_EMAIL,
+      to: env.TO_EMAIL,
+      reply_to: esMenor ? data.apoderado_correo : data.correo,
+      subject: (esMenor ? 'Nueva postulación Brigadier/Cadete' : 'Nueva postulación') + ' — Bomba Casablanca: ' + data.nombre,
+      html: buildEmailHtml(data, esMenor),
+      text: buildEmailText(data, esMenor)
+    })
+  });
+
+  if (!resendRes.ok) {
+    const detalle = await resendRes.text();
+    console.log('Resend rechazó el envío:', resendRes.status, detalle);
+    return false;
+  }
+
+  return true;
+}
+
+// Exports con nombre solo para pruebas unitarias; Wrangler únicamente usa el export default.
+export {
+  limpiarRut,
+  validarRut,
+  calcularEdad,
+  esEmailValido,
+  escapeHtml,
+  buildEmailHtml,
+  buildEmailText,
+  validarPostulacion,
+  enviarCorreoPostulacion,
+  corsHeaders,
+  jsonResponse
+};
+
 export default {
   async fetch(request, env) {
     const allowedOrigin = env.ALLOWED_ORIGIN;
@@ -216,57 +312,13 @@ export default {
       return jsonResponse({ ok: true }, 200, allowedOrigin);
     }
 
-    for (const field of REQUIRED_FIELDS) {
-      if (!data[field] || !String(data[field]).trim()) {
-        return jsonResponse({ ok: false, error: 'missing_field', field: field }, 400, allowedOrigin);
-      }
+    const resultado = validarPostulacion(data);
+    if (resultado.error) {
+      return jsonResponse({ ok: false, error: resultado.error, field: resultado.field }, 400, allowedOrigin);
     }
 
-    if (!EMAIL_RE.test(data.correo)) {
-      return jsonResponse({ ok: false, error: 'invalid_email' }, 400, allowedOrigin);
-    }
-
-    if (!validarRut(data.rut)) {
-      return jsonResponse({ ok: false, error: 'invalid_rut' }, 400, allowedOrigin);
-    }
-
-    if (Number.isNaN(new Date(data.fecha_nacimiento + 'T00:00:00').getTime())) {
-      return jsonResponse({ ok: false, error: 'invalid_birthdate' }, 400, allowedOrigin);
-    }
-
-    // La edad real (no el "tipo" que mande el cliente) decide si hace falta apoderado/tutor.
-    const esMenor = calcularEdad(data.fecha_nacimiento) < 18;
-
-    if (esMenor) {
-      for (const field of APODERADO_FIELDS) {
-        if (!data[field] || !String(data[field]).trim()) {
-          return jsonResponse({ ok: false, error: 'missing_field', field: field }, 400, allowedOrigin);
-        }
-      }
-      if (!EMAIL_RE.test(data.apoderado_correo)) {
-        return jsonResponse({ ok: false, error: 'invalid_apoderado_email' }, 400, allowedOrigin);
-      }
-    }
-
-    const resendRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + env.RESEND_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: env.FROM_EMAIL,
-        to: env.TO_EMAIL,
-        reply_to: esMenor ? data.apoderado_correo : data.correo,
-        subject: (esMenor ? 'Nueva postulación Brigadier/Cadete' : 'Nueva postulación') + ' — Bomba Casablanca: ' + data.nombre,
-        html: buildEmailHtml(data, esMenor),
-        text: buildEmailText(data, esMenor)
-      })
-    });
-
-    if (!resendRes.ok) {
-      const detalle = await resendRes.text();
-      console.log('Resend rechazó el envío:', resendRes.status, detalle);
+    const enviado = await enviarCorreoPostulacion(data, resultado.esMenor, env);
+    if (!enviado) {
       return jsonResponse({ ok: false, error: 'send_failed' }, 502, allowedOrigin);
     }
 

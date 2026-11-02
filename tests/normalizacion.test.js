@@ -39,6 +39,11 @@ describe('validarRut', () => {
     expect(validarRut('11111111-1')).toBe(true);
   });
 
+  test('acepta RUTs cuyo dígito verificador es 0 o K', () => {
+    expect(validarRut('0-0')).toBe(true);
+    expect(validarRut('6-K')).toBe(true);
+  });
+
   test('rechaza RUTs con dígito verificador incorrecto', () => {
     expect(validarRut('12.345.678-9')).toBe(false);
   });
@@ -47,6 +52,10 @@ describe('validarRut', () => {
     expect(validarRut('')).toBe(false);
     expect(validarRut('1')).toBe(false);
     expect(validarRut('abc-d')).toBe(false);
+  });
+
+  test('rechaza un RUT con una K en medio del cuerpo (no solo como dígito verificador)', () => {
+    expect(validarRut('1K2-3')).toBe(false);
   });
 });
 
@@ -74,6 +83,10 @@ describe('fechaMaximaPara18Anios', () => {
   test('devuelve la fecha de hoy menos 18 años, en formato YYYY-MM-DD', () => {
     expect(fechaMaximaPara18Anios(new Date(2026, 10, 2))).toBe('2008-11-02');
   });
+
+  test('usa la fecha actual cuando no se le pasa una', () => {
+    expect(fechaMaximaPara18Anios()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
 });
 
 describe('normalizarEspacios', () => {
@@ -98,5 +111,10 @@ describe('normalizarTelefono', () => {
 
   test('deja igual un número que no calza con el patrón chileno', () => {
     expect(normalizarTelefono('+1 212 555 0100')).toBe('+12125550100');
+  });
+
+  test('no falla con valores vacíos o nulos', () => {
+    expect(normalizarTelefono('')).toBe('');
+    expect(normalizarTelefono(null)).toBe('');
   });
 });

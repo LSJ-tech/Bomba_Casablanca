@@ -6,6 +6,7 @@ nav: postulacion
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<title>{{ page.title }}</title>
 {% include head.html %}
 </head>
 <body>
@@ -69,7 +70,7 @@ nav: postulacion
 
         <div class="campo">
           <label for="direccion">Dirección *</label>
-          <input type="text" id="direccion" name="direccion" required autocomplete="street-address">
+          <input type="text" id="direccion" name="direccion" required autocomplete="address-line1">
         </div>
 
         <div id="seccion-apoderado" style="display:none;">
@@ -104,7 +105,7 @@ nav: postulacion
           <label for="consentimiento">Acepto (o, si soy menor de edad, mi apoderado/tutor acepta) que estos datos sean usados para evaluar esta postulación, según la <a href="privacidad.html" style="color: var(--blue); text-decoration: underline;">Política de Privacidad</a>. *</label>
         </div>
 
-        <div id="form-mensaje" class="form-mensaje" role="status"></div>
+        <output id="form-mensaje" class="form-mensaje"></output>
 
         <button type="submit" class="btn" id="form-enviar">Enviar Postulación</button>
       </form>

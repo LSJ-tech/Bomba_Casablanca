@@ -17,6 +17,10 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/worker/"
+    ],
     "collectCoverageFrom": [
       "js/**/*.js"
     ],

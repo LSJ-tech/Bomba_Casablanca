@@ -21,12 +21,23 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            worker/package-lock.json
 
       - name: Instalar dependencias
         run: npm ci --ignore-scripts
 
       - name: Correr tests con cobertura
         run: npm test
+
+      - name: Instalar dependencias del Worker
+        run: npm ci --ignore-scripts
+        working-directory: worker
+
+      - name: Correr tests del Worker con cobertura
+        run: npm test
+        working-directory: worker
 
       - name: SonarQube Cloud Scan
         uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6.0.0
