@@ -322,43 +322,6 @@ ul {
   margin-top: -4.5rem;
 }
 
-@media (min-width: 900px) {
-  .hero-inicio .container {
-    display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    align-items: center;
-    gap: 2.5rem;
-    text-align: left;
-  }
-
-  .hero-inicio .cresta-wrap {
-    order: 2;
-    width: 230px;
-    height: 230px;
-    margin: 0 auto;
-  }
-
-  .hero-inicio .cresta-wrap img {
-    inset: 26px;
-    width: calc(100% - 52px);
-    height: calc(100% - 52px);
-  }
-
-  .hero-inicio .hero-texto {
-    order: 1;
-  }
-
-  .hero-inicio h2,
-  .hero-inicio p {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .hero-inicio .hero-acciones {
-    justify-content: flex-start;
-  }
-}
-
 /* Hero compacto (páginas internas) */
 
 .hero-pagina {
