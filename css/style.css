@@ -126,8 +126,8 @@ ul {
 }
 
 .brand img {
-  width: 72px;
-  height: 72px;
+  width: 86px;
+  height: 86px;
   object-fit: contain;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
   flex-shrink: 0;
@@ -179,8 +179,8 @@ ul {
   }
 
   .brand img {
-    width: 58px;
-    height: 58px;
+    width: 62px;
+    height: 62px;
   }
 
   .brand-text {
