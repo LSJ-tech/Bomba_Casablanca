@@ -1,0 +1,57 @@
+---
+title: Directorio | Bomba Casablanca - Segunda Compañía
+description: Oficiales de Bomba Casablanca, la Segunda Compañía del Cuerpo de Bomberos de Casablanca.
+nav: directorio
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+{% include head.html %}
+</head>
+<body>
+
+{% include header.html %}
+
+<main>
+
+  <section class="hero-pagina">
+    <div class="container">
+      <h2>Directorio</h2>
+      <p>Oficiales de la Segunda Compañía, Bomba Casablanca.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container-angosto">
+
+      <div class="organigrama-nivel">
+        <h3>Mando de Compañía</h3>
+        <div class="cargos-grid">
+          <div class="cargo-card">
+            <span class="cargo-titulo">Director(a)</span>
+            <span class="cargo-nombre">Verenna Beltrán Muñoz</span>
+          </div>
+          <div class="cargo-card">
+            <span class="cargo-titulo">Capitán</span>
+            <span class="cargo-nombre">Valentín Gómez V.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTA INTERNA: falta confirmar el resto de la plana de oficiales (Teniente 1°, 2°, 3°, Secretario,
+           Tesorero, Ayudante, etc.) y el número de voluntarios activos. Ver VALIDACION-INSTITUCIONAL.md.
+           Para agregar foto oficial a un cargo: <img class="cargo-foto" src="img/nombre-apellido.jpg"
+           alt="Nombre Apellido"> como primer elemento dentro de ese .cargo-card -->
+
+      <p style="text-align:center; color: var(--ink-soft); margin-top:1rem;">
+        Bomba Casablanca es la Segunda Compañía del Cuerpo de Bomberos de Casablanca.
+        <a href="https://bomberoscasablanca.devquad.cl/directorio.html" style="color: var(--blue); font-weight:700; border-bottom: 1px solid var(--gold);">Ver Directorio General del Cuerpo</a>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+{% include footer.html %}
+</body>
+</html>

@@ -1,0 +1,71 @@
+---
+title: Contacto | Bomba Casablanca - Segunda Compañía
+description: Contacto y ubicación de Bomba Casablanca, la Segunda Compañía del Cuerpo de Bomberos de Casablanca.
+nav: contacto
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+{% include head.html %}
+</head>
+<body>
+
+{% include header.html %}
+
+<main>
+
+  <section class="hero-pagina">
+    <div class="container">
+      <h2>Contacto</h2>
+      <p>Estamos para servir a la comunidad de Casablanca.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="contacto-grid">
+        <div>
+          <div class="contacto-item">
+            <span style="color: var(--gold-dark); font-size: 1.2rem;">&#128205;</span>
+            <div>
+              <strong>Dirección</strong><br>
+              Avenida Alejandro Galaz 303/343, Casablanca (contigua a la comandancia)
+            </div>
+          </div>
+          <div class="contacto-item">
+            <span style="color: var(--gold-dark); font-size: 1.2rem;">&#9742;</span>
+            <div>
+              <strong>Teléfono del Cuerpo</strong><br>
+              (32) 2742366
+            </div>
+          </div>
+          <div class="contacto-item">
+            <span style="color: var(--gold-dark); font-size: 1.2rem;">&#128680;</span>
+            <div>
+              <strong>Emergencias</strong><br>
+              Llama al <strong>132</strong> (Bomberos de Chile)
+            </div>
+          </div>
+        </div>
+
+        <div class="mapa-wrap">
+          <iframe
+            src="https://www.google.com/maps?q=Avenida+Alejandro+Galaz+303,+Casablanca,+Chile&output=embed"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Ubicación Bomba Casablanca - Segunda Compañía">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTA INTERNA: falta un teléfono/correo de contacto propio de la Segunda Compañía (hoy se muestra el
+       teléfono general del Cuerpo). Ver VALIDACION-INSTITUCIONAL.md. -->
+
+</main>
+
+{% include footer.html %}
+</body>
+</html>

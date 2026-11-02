@@ -1,0 +1,42 @@
+---
+title: Material Mayor | Bomba Casablanca - Segunda Compañía
+description: Material mayor y vehículos de Bomba Casablanca, la Segunda Compañía del Cuerpo de Bomberos de Casablanca.
+nav: material-mayor
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+{% include head.html %}
+</head>
+<body>
+
+{% include header.html %}
+
+<main>
+
+  <section class="hero-pagina">
+    <div class="container">
+      <h2>Material Mayor</h2>
+      <p>Vehículos y equipamiento de Bomba Casablanca.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container-angosto" style="text-align:center;">
+      <p style="color: var(--ink-soft); font-size:1.05rem;">
+        Esta sección se publicará con el detalle del material mayor de la Segunda Compañía —fotografía,
+        identificación, tipo y función— en cuanto esté disponible esa información.
+      </p>
+    </div>
+  </section>
+
+  <!-- NOTA INTERNA: cuando se confirme el material mayor (tipo de carro, identificación, año, función y
+       características), reemplazar la sección de arriba por un <div class="material-grid"> dentro de un
+       <div class="container">, con un include de _includes/material-card.html por unidad (compania, tipo,
+       identificacion, anio, funcion; foto y caracteristicas son opcionales). Ver VALIDACION-INSTITUCIONAL.md. -->
+
+</main>
+
+{% include footer.html %}
+</body>
+</html>

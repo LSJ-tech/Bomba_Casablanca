@@ -1,0 +1,45 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page.title }}</title>
+<meta name="description" content="{{ page.description }}">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bomba Casablanca">
+<meta property="og:title" content="{{ page.title }}">
+<meta property="og:description" content="{{ page.description }}">
+<meta property="og:image" content="https://bombacasablanca.devquad.cl/img/escudo-segunda.png">
+<meta property="og:url" content="https://bombacasablanca.devquad.cl{{ page.url }}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ page.title }}">
+<meta name="twitter:description" content="{{ page.description }}">
+<meta name="twitter:image" content="https://bombacasablanca.devquad.cl/img/escudo-segunda.png">
+
+<link rel="icon" href="img/escudo-segunda.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v={{ site.time | date: '%s' }}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FireStation",
+  "name": "Bomba Casablanca - Segunda Compañía del Cuerpo de Bomberos de Casablanca",
+  "url": "https://bombacasablanca.devquad.cl/",
+  "logo": "https://bombacasablanca.devquad.cl/img/escudo-segunda.png",
+  "image": "https://bombacasablanca.devquad.cl/img/escudo-segunda.png",
+  "foundingDate": "1984-07-17",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Avenida Alejandro Galaz 303/343",
+    "addressLocality": "Casablanca",
+    "addressRegion": "Valparaíso",
+    "addressCountry": "CL"
+  },
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "Cuerpo de Bomberos de Casablanca",
+    "url": "https://bomberoscasablanca.devquad.cl/"
+  }
+}
+</script>

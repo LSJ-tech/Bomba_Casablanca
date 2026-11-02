@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bombacasablanca.devquad.cl/sitemap.xml

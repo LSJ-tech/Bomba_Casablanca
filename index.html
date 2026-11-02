@@ -1,0 +1,127 @@
+---
+title: Bomba Casablanca | Segunda Compañía del Cuerpo de Bomberos de Casablanca
+description: Sitio de Bomba Casablanca, la Segunda Compañía del Cuerpo de Bomberos de Casablanca, fundada el 17 de julio de 1984.
+nav: inicio
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+{% include head.html %}
+</head>
+<body>
+
+{% include header.html %}
+
+<main>
+
+  <section class="hero-ceremonial hero-inicio">
+    <div class="container">
+      <div class="cresta-wrap">
+        <span class="cresta-anillo" aria-hidden="true"></span>
+        <img src="img/escudo-segunda.png" alt="Escudo Segunda Compañía Bomba Casablanca" width="500" height="500">
+      </div>
+      <div class="hero-texto">
+        <h2>Constancia y Disciplina, al servicio de Casablanca desde 1984</h2>
+        <p>Bomba Casablanca es la Segunda Compañía del Cuerpo de Bomberos de Casablanca, con más de 40 años de servicio voluntario a la comunidad.</p>
+        <div class="hero-acciones">
+          <a href="historia.html" class="btn">Nuestra Historia</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ledger">
+    <div class="container">
+      <div class="ledger-grid">
+        <div class="ledger-item">
+          <span class="ledger-number">1984</span>
+          <span class="ledger-label">Año de Fundación</span>
+        </div>
+        <div class="ledger-item">
+          <span class="ledger-number">II</span>
+          <span class="ledger-label">Compañía</span>
+        </div>
+        <div class="ledger-item">
+          <span class="ledger-number">100%</span>
+          <span class="ledger-label">Voluntario(a)s</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-title centrado">
+        <h2>Información Institucional</h2>
+        <p>Datos generales de la Segunda Compañía</p>
+      </div>
+
+      <dl class="placa placa-grid">
+        <div class="placa-col">
+          <dt>Compañía</dt>
+          <dd>Segunda Compañía — Bomba Casablanca</dd>
+          <dt>Fecha de Fundación</dt>
+          <dd>17 de julio de 1984</dd>
+          <dt>Colores</dt>
+          <dd>Azul y amarillo</dd>
+        </div>
+        <div class="placa-col">
+          <dt>Director(a)</dt>
+          <dd>Verenna Beltrán Muñoz</dd>
+          <dt>Capitán</dt>
+          <dd>Valentín Gómez V.</dd>
+          <dt>Especialidad</dt>
+          <dd>Incendios estructurales y forestales</dd>
+        </div>
+        <div class="placa-col">
+          <dt>Dirección / Cuartel</dt>
+          <dd>Avenida Alejandro Galaz 303/343, Casablanca (contigua a la comandancia)</dd>
+          <dt>Lema</dt>
+          <dd>"Constancia y Disciplina"</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="alt-bg">
+    <div class="container servicios-layout">
+      <div class="servicios-intro">
+        <h2>¿Qué Hacemos?</h2>
+        <p>Especialidad de la Segunda Compañía dentro del Cuerpo de Bomberos de Casablanca.</p>
+      </div>
+      <div class="servicios-lista">
+        <div class="servicio-fila">
+          {% include cruz.html %}
+          <div>
+            <h3>Incendios Estructurales</h3>
+            <p>Combate de incendios en viviendas, comercios e industrias de Casablanca.</p>
+          </div>
+        </div>
+        <div class="servicio-fila">
+          {% include cruz.html %}
+          <div>
+            <h3>Incendios Forestales</h3>
+            <p>Control de incendios forestales y de pastizales en la comuna.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container-angosto" style="text-align:center;">
+      <div class="section-title centrado">
+        <h2>Parte del Cuerpo de Bomberos de Casablanca</h2>
+      </div>
+      <p style="color: var(--ink-soft);">
+        Bomba Casablanca es una de las unidades del Cuerpo de Bomberos de Casablanca, junto a otras 3 compañías y 2 brigadas.
+        <a href="https://bomberoscasablanca.devquad.cl/" style="color: var(--blue); font-weight:700; border-bottom: 1px solid var(--gold);">Conoce el Cuerpo completo</a>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+{% include footer.html %}
+</body>
+</html>

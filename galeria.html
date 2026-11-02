@@ -1,0 +1,42 @@
+---
+title: Galería | Bomba Casablanca - Segunda Compañía
+description: Galería de fotos de Bomba Casablanca, la Segunda Compañía del Cuerpo de Bomberos de Casablanca.
+nav: galeria
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+{% include head.html %}
+</head>
+<body>
+
+{% include header.html %}
+
+<main>
+
+  <section class="hero-pagina">
+    <div class="container">
+      <h2>Galería</h2>
+      <p>Momentos de nuestra historia y labor voluntaria.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container-angosto" style="text-align:center;">
+      <p style="color: var(--ink-soft); font-size:1.05rem;">
+        Esta galería se publicará con fotografías reales y autorizadas de Bomba Casablanca en cuanto estén
+        disponibles.
+      </p>
+    </div>
+  </section>
+
+  <!-- NOTA INTERNA: para agregar fotos reales, guárdalas en img/ y agrega un <div class="galeria-item"> con
+       <img src="img/nombre-foto.jpg" alt="descripción" loading="lazy"> dentro de un <div class="galeria-grid">,
+       en vez del párrafo de arriba. El lightbox (clic para ampliar, flechas de teclado, Escape para cerrar) se
+       activa automáticamente sobre cualquier foto real agregada así. -->
+
+</main>
+
+{% include footer.html %}
+</body>
+</html>

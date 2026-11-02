@@ -1,0 +1,22 @@
+<header class="site-header">
+  <div class="header-bar">
+    <a href="index.html" class="brand">
+      <img src="img/escudo-segunda.png" alt="Escudo Segunda Compañía Bomba Casablanca" width="500" height="500">
+      <div class="brand-text">
+        <h1>Bomba Casablanca</h1>
+        <span>Segunda Compañía · Fundada el 17-07-1984</span>
+      </div>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menú">&#9776;</button>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html"{% if page.nav == 'inicio' %} class="active"{% endif %}>Inicio</a></li>
+        <li><a href="historia.html"{% if page.nav == 'historia' %} class="active"{% endif %}>Historia</a></li>
+        <li><a href="directorio.html"{% if page.nav == 'directorio' %} class="active"{% endif %}>Directorio</a></li>
+        <li><a href="material-mayor.html"{% if page.nav == 'material-mayor' %} class="active"{% endif %}>Material Mayor</a></li>
+        <li><a href="galeria.html"{% if page.nav == 'galeria' %} class="active"{% endif %}>Galería</a></li>
+        <li><a href="contacto.html"{% if page.nav == 'contacto' %} class="active"{% endif %}>Contacto</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
