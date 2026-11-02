@@ -39,6 +39,9 @@ jobs:
         run: npm test
         working-directory: worker
 
+      - name: Ajustar rutas del lcov del Worker a rutas relativas a la raíz del repo
+        run: sed -i 's|^SF:|SF:worker/|' worker/coverage/lcov.info
+
       - name: SonarQube Cloud Scan
         uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6.0.0
         env:
