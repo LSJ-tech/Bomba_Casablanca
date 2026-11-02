@@ -7,8 +7,8 @@ placeholder inventado.
 
 | Página | Dato pendiente | Información actualmente disponible | Qué debe confirmar la institución | Prioridad |
 |---|---|---|---|---|
-| Directorio | Plana de oficiales completa | Solo Director(a) (Verenna Beltrán Muñoz) y Capitán (Valentín Gómez V.), tomados del sitio del Cuerpo. | Teniente 1°, 2°, 3°, Secretario, Tesorero, Ayudante y demás cargos de la compañía. | **Alta** |
-| Directorio | Número de voluntarios activos | Sin dato. | Cifra aproximada o exacta de voluntarios(as) de la compañía. | Media |
+| Oficialidad 2026 | Nombres de 7 cargos | La página ya muestra la estructura completa (Director(a), Capitán, Teniente 1°/2°/3°, Ayudante, Secretario(a), Tesorero(a), Intendente); solo Director(a) (Verenna Beltrán Muñoz) y Capitán (Valentín Gómez V.) tienen nombre, el resto dice "Por confirmar". | Nombre de cada Teniente (1°, 2°, 3°), Ayudante, Secretario(a), Tesorero(a) e Intendente. | **Alta** |
+| Oficialidad 2026 | Número de voluntarios activos | Sin dato. | Cifra aproximada o exacta de voluntarios(as) de la compañía. | Media |
 | Historia | Reseña institucional completa | Solo se tiene la fecha de fundación (17-07-1984) y el lema. | Texto de reseña histórica: orígenes, crecimiento, hitos, emergencias relevantes, capitanes/directores anteriores. | **Alta** |
 | Material Mayor | Listado de vehículos | Página publicada solo con mensaje de "en preparación". | Tipo de carro, identificación, año, función y características de cada unidad, idealmente con fotografía. | **Alta** |
 | Galería | Fotografías reales | Sección publicada sin fotos, con mensaje de "próximamente". | Fotos reales y autorizadas de la compañía. El lightbox del código ya está listo para recibirlas. | **Alta** |
@@ -16,8 +16,7 @@ placeholder inventado.
 | Contacto / General | Redes sociales | Sin dato. | Instagram/Facebook oficial de la compañía, si tiene. | Baja |
 | Política de Privacidad | Validación jurídica | Borrador base conforme a la Ley N° 19.628. | Revisión y validación formal por la directiva de la compañía; ajustar cuando entre en vigencia la Ley N° 21.719 (diciembre de 2026). | Media |
 | General | Dominio definitivo | Sitio en `bombacasablanca.devquad.cl` (subdominio de demo). | Compra de `bombacasablanca.cl` y fecha de migración una vez que la compañía apruebe el sitio. | Baja (futuro) |
-| General | Despliegue en GitHub Pages | Repo creado (`LSJ-tech/Bomba_Casablanca`), pendiente de push inicial. | Activar GitHub Pages en la configuración del repo (rama `main`) y agregar el registro DNS `bombacasablanca.devquad.cl` → `LSJ-tech.github.io` (igual que `bomberoscasablanca.devquad.cl`). | **Alta** |
-| General | Secreto SONAR_TOKEN | Workflow de SonarCloud copiado del sitio del Cuerpo. | Configurar el secreto `SONAR_TOKEN` en este repo (Settings → Secrets) y crear el proyecto `LSJ-tech_Bomba_Casablanca` en SonarCloud. | Media |
+| General | Secreto SONAR_TOKEN | Repo y secreto configurados por el usuario (2026-11-02); falta verificar que el workflow de SonarCloud corra en verde tras el re-run. | Confirmar en la pestaña Actions que el run de "SonarCloud" termine en éxito. | Baja |
 
 ## Cómo usar este archivo
 

@@ -895,6 +895,17 @@ section {
   color: var(--ink);
 }
 
+.cargo-nombre.cargo-pendiente {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.cargo-card:has(.cargo-pendiente) {
+  border-top-color: #d6e2ef;
+}
+
 .cargo-email {
   display: block;
   margin-top: 0.4rem;
