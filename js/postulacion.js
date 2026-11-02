@@ -40,6 +40,25 @@ function normalizarEspacios(texto) {
   return String(texto || '').trim().replace(/\s+/g, ' ');
 }
 
+function calcularEdad(fechaNacimiento, hoy) {
+  hoy = hoy || new Date();
+  var nacimiento = new Date(fechaNacimiento + 'T00:00:00');
+  var edad = hoy.getFullYear() - nacimiento.getFullYear();
+  var mesDiff = hoy.getMonth() - nacimiento.getMonth();
+  if (mesDiff < 0 || (mesDiff === 0 && hoy.getDate() < nacimiento.getDate())) {
+    edad--;
+  }
+  return edad;
+}
+
+function fechaMaximaPara18Anios(hoy) {
+  hoy = hoy || new Date();
+  var limite = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
+  var mes = String(limite.getMonth() + 1).padStart(2, '0');
+  var dia = String(limite.getDate()).padStart(2, '0');
+  return limite.getFullYear() + '-' + mes + '-' + dia;
+}
+
 function normalizarTelefono(telefono) {
   var limpio = String(telefono || '').trim().replace(/[^\d+]/g, '');
   // Si escribieron un celular chileno sin el +56 (9 dígitos empezando en 9), se lo agregamos.
@@ -56,6 +75,11 @@ function initFormPostulacion() {
   var mensaje = document.getElementById('form-mensaje');
   var boton = document.getElementById('form-enviar');
   var campoRut = document.getElementById('rut');
+  var campoFecha = document.getElementById('fecha_nacimiento');
+
+  if (campoFecha) {
+    campoFecha.max = fechaMaximaPara18Anios();
+  }
 
   if (campoRut) {
     campoRut.addEventListener('blur', function () {
@@ -67,6 +91,14 @@ function initFormPostulacion() {
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+
+    var fechaNacimiento = document.getElementById('fecha_nacimiento').value;
+    if (fechaNacimiento && calcularEdad(fechaNacimiento) < 18) {
+      mensaje.className = 'form-mensaje visible error';
+      mensaje.textContent = 'Debes tener al menos 18 años para postular como voluntario(a). Si eres menor de edad, contáctanos para información sobre Brigadieres/Cadetes.';
+      document.getElementById('fecha_nacimiento').focus();
+      return;
+    }
 
     if (!form.checkValidity()) {
       form.reportValidity();
@@ -133,6 +165,8 @@ if (typeof module !== 'undefined' && module.exports) {
     limpiarRut: limpiarRut,
     formatearRut: formatearRut,
     validarRut: validarRut,
+    calcularEdad: calcularEdad,
+    fechaMaximaPara18Anios: fechaMaximaPara18Anios,
     normalizarEspacios: normalizarEspacios,
     normalizarTelefono: normalizarTelefono
   };

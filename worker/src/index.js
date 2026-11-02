@@ -27,6 +27,17 @@ function validarRut(rut) {
   return dv === dvEsperado;
 }
 
+function calcularEdad(fechaNacimiento, hoy) {
+  hoy = hoy || new Date();
+  const nacimiento = new Date(fechaNacimiento + 'T00:00:00');
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  const mesDiff = hoy.getMonth() - nacimiento.getMonth();
+  if (mesDiff < 0 || (mesDiff === 0 && hoy.getDate() < nacimiento.getDate())) {
+    edad--;
+  }
+  return edad;
+}
+
 function corsHeaders(allowedOrigin) {
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
@@ -176,6 +187,10 @@ export default {
 
     if (!validarRut(data.rut)) {
       return jsonResponse({ ok: false, error: 'invalid_rut' }, 400, allowedOrigin);
+    }
+
+    if (Number.isNaN(new Date(data.fecha_nacimiento).getTime()) || calcularEdad(data.fecha_nacimiento) < 18) {
+      return jsonResponse({ ok: false, error: 'underage' }, 400, allowedOrigin);
     }
 
     const resendRes = await fetch('https://api.resend.com/emails', {

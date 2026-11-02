@@ -3,6 +3,8 @@ const {
   limpiarRut,
   formatearRut,
   validarRut,
+  calcularEdad,
+  fechaMaximaPara18Anios,
   normalizarEspacios,
   normalizarTelefono
 } = require('../js/postulacion.js');
@@ -90,6 +92,32 @@ describe('normalizarEspacios', () => {
   });
 });
 
+// new Date(2026, 10, 2) usa el constructor en hora local (noviembre es el mes 10, base 0),
+// a diferencia de new Date('2026-11-02') que se interpreta en UTC y se corre un día en Chile.
+describe('calcularEdad', () => {
+  test('calcula bien cuando ya pasó el cumpleaños este año', () => {
+    expect(calcularEdad('2000-01-01', new Date(2026, 10, 2))).toBe(26);
+  });
+
+  test('calcula bien cuando el cumpleaños todavía no llega este año', () => {
+    expect(calcularEdad('2000-12-31', new Date(2026, 10, 2))).toBe(25);
+  });
+
+  test('da 18 el mismo día del cumpleaños número 18', () => {
+    expect(calcularEdad('2008-11-02', new Date(2026, 10, 2))).toBe(18);
+  });
+
+  test('da 17 un día antes del cumpleaños número 18', () => {
+    expect(calcularEdad('2008-11-03', new Date(2026, 10, 2))).toBe(17);
+  });
+});
+
+describe('fechaMaximaPara18Anios', () => {
+  test('devuelve la fecha de hoy menos 18 años, en formato YYYY-MM-DD', () => {
+    expect(fechaMaximaPara18Anios(new Date(2026, 10, 2))).toBe('2008-11-02');
+  });
+});
+
 describe('normalizarTelefono', () => {
   test('agrega +56 a un celular chileno de 9 dígitos sin prefijo', () => {
     expect(normalizarTelefono('912345678')).toBe('+56912345678');
@@ -146,6 +174,25 @@ describe('initFormPostulacion', () => {
     const mensaje = document.getElementById('form-mensaje');
     expect(mensaje.className).toContain('error');
     expect(mensaje.textContent).toContain('RUT');
+  });
+
+  test('no envía la petición si quien postula es menor de 18 años', () => {
+    initFormPostulacion();
+    llenarFormularioValido();
+    const hoy = new Date();
+    document.getElementById('fecha_nacimiento').value = (hoy.getFullYear() - 10) + '-01-01';
+
+    document.getElementById('form-postulacion').dispatchEvent(new Event('submit', { cancelable: true }));
+
+    expect(global.fetch).not.toHaveBeenCalled();
+    const mensaje = document.getElementById('form-mensaje');
+    expect(mensaje.className).toContain('error');
+    expect(mensaje.textContent).toContain('18 años');
+  });
+
+  test('pone el máximo del campo de fecha de nacimiento en hoy menos 18 años', () => {
+    initFormPostulacion();
+    expect(document.getElementById('fecha_nacimiento').max).toBe(fechaMaximaPara18Anios());
   });
 
   test('envía los datos normalizados y muestra el mensaje de éxito', async () => {

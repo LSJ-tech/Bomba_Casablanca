@@ -18,7 +18,7 @@ placeholder inventado.
 | General | Dominio definitivo | Sitio en `bombacasablanca.devquad.cl` (subdominio de demo). | Compra de `bombacasablanca.cl` y fecha de migración una vez que la compañía apruebe el sitio. | Baja (futuro) |
 | General | Secreto SONAR_TOKEN | Repo y secreto configurados por el usuario (2026-11-02); falta verificar que el workflow de SonarCloud corra en verde tras el re-run. | Confirmar en la pestaña Actions que el run de "SonarCloud" termine en éxito. | Baja |
 | Postulación | Correo de destino | Worker desplegado y probado de punta a punta (2026-11-02): llega bien a `logan.silva.jara@gmail.com` (`TO_EMAIL` en `worker/wrangler.toml`), remitente `postulaciones-bombacasablanca@devquad.cl` (dominio verificado en Resend). | Cambiar `TO_EMAIL` al correo oficial del Director(a) o de la compañía una vez exista. | Media |
-| Postulación | Requisitos de ingreso (edad mínima, etc.) | El formulario no restringe edad ni otros requisitos; solo pide los datos de contacto. | Confirmar con la compañía los requisitos reales de postulación para mostrarlos en la página. | Media |
+| Postulación | Requisitos adicionales propios de la compañía | La página ya muestra los requisitos nacionales oficiales (18 años, sin antecedentes, salud compatible — fuente: bomberos.cl/quieres-ser-bombero) y el formulario exige 18+ años (frontend y Worker). | Confirmar si Bomba Casablanca exige algo adicional a lo nacional (ej. curso de inducción propio, cupos). | Baja |
 
 ## Cómo usar este archivo
 
