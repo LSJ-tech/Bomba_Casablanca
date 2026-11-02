@@ -918,6 +918,65 @@ section {
   text-decoration-color: var(--gold);
 }
 
+/* ---------- Organigrama en árbol ---------- */
+
+.org-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.org-parent {
+  width: 100%;
+  max-width: 260px;
+}
+
+.org-parent .cargo-titulo {
+  color: var(--blue);
+}
+
+.org-stem {
+  width: 1px;
+  height: 28px;
+  background: var(--gold);
+}
+
+.org-children {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem 1.5rem;
+  border-top: 1px solid var(--gold);
+  padding-top: 28px;
+}
+
+.org-child {
+  position: relative;
+  width: 190px;
+}
+
+.org-child::before {
+  content: "";
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  width: 1px;
+  height: 28px;
+  background: var(--gold);
+}
+
+@media (max-width: 600px) {
+  .org-children {
+    border-top: none;
+    padding-top: 0;
+    gap: 1rem;
+  }
+
+  .org-child::before {
+    display: none;
+  }
+}
+
 .cargo-foto {
   width: 64px;
   height: 64px;
