@@ -1,7 +1,7 @@
 // Bomba Casablanca - formulario de postulación
 // NOTA: reemplazar POSTULACION_ENDPOINT con la URL real que entregue "wrangler deploy" del Worker en worker/.
 
-var POSTULACION_ENDPOINT = 'https://bombacasablanca-postulaciones.TU-SUBDOMINIO.workers.dev';
+var POSTULACION_ENDPOINT = 'https://bombacasablanca-postulaciones.devquad.workers.dev';
 
 function initFormPostulacion() {
   var form = document.getElementById('form-postulacion');
