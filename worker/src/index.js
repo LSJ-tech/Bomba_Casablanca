@@ -27,16 +27,90 @@ function escapeHtml(value) {
     .replace(/'/g, '&#039;');
 }
 
+const CAMPOS_TABLA = [
+  ['Nombre', 'nombre'],
+  ['RUT', 'rut'],
+  ['Fecha de nacimiento', 'fecha_nacimiento'],
+  ['Teléfono', 'telefono'],
+  ['Correo', 'correo'],
+  ['Dirección', 'direccion']
+];
+
 function buildEmailHtml(data) {
+  const filasHtml = CAMPOS_TABLA.map(function (campo) {
+    return (
+      '<tr>' +
+      '<td style="padding:10px 16px;border-bottom:1px solid #e4ecf5;font-family:Arial,Helvetica,sans-serif;' +
+      'font-size:13px;font-weight:bold;color:#1d5fa6;white-space:nowrap;vertical-align:top;">' +
+      escapeHtml(campo[0]) +
+      '</td>' +
+      '<td style="padding:10px 16px;border-bottom:1px solid #e4ecf5;font-family:Arial,Helvetica,sans-serif;' +
+      'font-size:14px;color:#1c232b;">' +
+      escapeHtml(data[campo[1]]) +
+      '</td>' +
+      '</tr>'
+    );
+  }).join('');
+
   return (
-    '<h2>Nueva postulación a Bomba Casablanca</h2>' +
-    '<p><strong>Nombre:</strong> ' + escapeHtml(data.nombre) + '</p>' +
-    '<p><strong>RUT:</strong> ' + escapeHtml(data.rut) + '</p>' +
-    '<p><strong>Fecha de nacimiento:</strong> ' + escapeHtml(data.fecha_nacimiento) + '</p>' +
-    '<p><strong>Teléfono:</strong> ' + escapeHtml(data.telefono) + '</p>' +
-    '<p><strong>Correo:</strong> ' + escapeHtml(data.correo) + '</p>' +
-    '<p><strong>Dirección:</strong> ' + escapeHtml(data.direccion) + '</p>' +
-    '<p><strong>Motivo:</strong><br>' + escapeHtml(data.motivo).replace(/\n/g, '<br>') + '</p>'
+    '<!DOCTYPE html><html lang="es"><body style="margin:0;padding:0;background:#f2f5f9;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f5f9;padding:24px 0;">' +
+    '<tr><td align="center">' +
+    '<table role="presentation" width="600" cellpadding="0" cellspacing="0" ' +
+    'style="background:#ffffff;border-radius:6px;overflow:hidden;max-width:600px;width:100%;">' +
+
+    '<tr><td style="background:#0b2a4d;padding:24px 28px;border-bottom:3px solid #ffd500;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
+    '<td style="width:48px;"><img src="https://bombacasablanca.devquad.cl/img/escudo-segunda.png" width="40" ' +
+    'height="40" alt="" style="display:block;"></td>' +
+    '<td style="padding-left:12px;">' +
+    '<div style="font-family:Georgia,serif;font-weight:bold;color:#ffffff;font-size:18px;">Bomba Casablanca</div>' +
+    '<div style="font-family:Arial,Helvetica,sans-serif;color:#ffe14d;font-size:12px;">' +
+    'Segunda Compañía del Cuerpo de Bomberos de Casablanca</div>' +
+    '</td></tr></table>' +
+    '</td></tr>' +
+
+    '<tr><td style="padding:24px 28px 8px;">' +
+    '<h1 style="margin:0;font-family:Georgia,serif;font-size:20px;color:#0b2a4d;">Nueva postulación</h1>' +
+    '<p style="margin:6px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4f5b68;">' +
+    'Alguien completó el formulario de postulación del sitio.</p>' +
+    '</td></tr>' +
+
+    '<tr><td style="padding:12px 28px 4px;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" ' +
+    'style="border:1px solid #e4ecf5;border-radius:4px;overflow:hidden;">' +
+    filasHtml +
+    '</table>' +
+    '</td></tr>' +
+
+    '<tr><td style="padding:16px 28px 24px;">' +
+    '<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#1d5fa6;' +
+    'margin-bottom:6px;">Motivo de la postulación</div>' +
+    '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c232b;line-height:1.5;' +
+    'background:#f7f9fc;border:1px solid #e4ecf5;border-radius:4px;padding:12px 14px;white-space:pre-line;">' +
+    escapeHtml(data.motivo) +
+    '</div>' +
+    '</td></tr>' +
+
+    '<tr><td style="padding:16px 28px 24px;border-top:1px solid #e4ecf5;">' +
+    '<p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#94806f;">' +
+    'Enviado automáticamente desde el formulario de postulación de bombacasablanca.devquad.cl. ' +
+    'Responde este correo para contactar directamente a quien postuló.</p>' +
+    '</td></tr>' +
+
+    '</table></td></tr></table></body></html>'
+  );
+}
+
+function buildEmailText(data) {
+  const lineas = CAMPOS_TABLA.map(function (campo) {
+    return campo[0] + ': ' + data[campo[1]];
+  });
+  return (
+    'Nueva postulación — Bomba Casablanca\n\n' +
+    lineas.join('\n') +
+    '\n\nMotivo de la postulación:\n' + data.motivo +
+    '\n\n---\nEnviado automáticamente desde el formulario de postulación de bombacasablanca.devquad.cl.'
   );
 }
 
@@ -86,7 +160,8 @@ export default {
         to: env.TO_EMAIL,
         reply_to: data.correo,
         subject: 'Nueva postulación — Bomba Casablanca: ' + data.nombre,
-        html: buildEmailHtml(data)
+        html: buildEmailHtml(data),
+        text: buildEmailText(data)
       })
     });
 
