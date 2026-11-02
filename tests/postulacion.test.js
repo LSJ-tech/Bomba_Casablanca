@@ -1,13 +1,4 @@
-const {
-  initFormPostulacion,
-  limpiarRut,
-  formatearRut,
-  validarRut,
-  calcularEdad,
-  fechaMaximaPara18Anios,
-  normalizarEspacios,
-  normalizarTelefono
-} = require('../js/postulacion.js');
+const { initFormPostulacion, esMenorDeEdad, actualizarSeccionApoderado } = require('../js/postulacion.js');
 
 function construirFormulario() {
   document.body.innerHTML = `
@@ -19,6 +10,11 @@ function construirFormulario() {
       <input type="tel" id="telefono" name="telefono" required>
       <input type="email" id="correo" name="correo" required>
       <input type="text" id="direccion" name="direccion" required>
+      <div id="seccion-apoderado" style="display:none;">
+        <input type="text" id="apoderado_nombre" name="apoderado_nombre">
+        <input type="tel" id="apoderado_telefono" name="apoderado_telefono">
+        <input type="email" id="apoderado_correo" name="apoderado_correo">
+      </div>
       <textarea id="motivo" name="motivo" required></textarea>
       <input type="checkbox" id="consentimiento" name="consentimiento" required>
       <div id="form-mensaje" class="form-mensaje" role="status"></div>
@@ -28,107 +24,66 @@ function construirFormulario() {
 }
 
 // 11.111.111-1 es un RUT con dígito verificador válido, usado comúnmente para pruebas.
-function llenarFormularioValido() {
+function llenarFormularioValido(opciones) {
+  opciones = opciones || {};
   document.getElementById('nombre').value = '  Juana   Pérez  ';
   document.getElementById('rut').value = '11.111.111-1';
-  document.getElementById('fecha_nacimiento').value = '2000-01-01';
+  document.getElementById('fecha_nacimiento').value = opciones.fechaNacimiento || '2000-01-01';
   document.getElementById('telefono').value = '912345678';
   document.getElementById('correo').value = '  Juana@Example.com  ';
   document.getElementById('direccion').value = 'Calle Falsa 123, Casablanca';
   document.getElementById('motivo').value = 'Quiero ayudar a mi comunidad.';
   document.getElementById('consentimiento').checked = true;
+
+  if (opciones.apoderado) {
+    document.getElementById('apoderado_nombre').value = '  Pedro   Pérez  ';
+    document.getElementById('apoderado_telefono').value = '987654321';
+    document.getElementById('apoderado_correo').value = '  Pedro@Example.com  ';
+  }
 }
 
-describe('limpiarRut', () => {
-  test('quita puntos, guión y espacios, y deja la K en mayúscula', () => {
-    expect(limpiarRut('11.111.111-1')).toBe('111111111');
-    expect(limpiarRut(' 7.654.321-k ')).toBe('7654321K');
+function fechaHaceAnios(anios) {
+  var hoy = new Date();
+  return (hoy.getFullYear() - anios) + '-01-01';
+}
+
+describe('esMenorDeEdad', () => {
+  test('da true para una fecha de hace 10 años', () => {
+    expect(esMenorDeEdad(fechaHaceAnios(10))).toBe(true);
   });
 
-  test('no falla con valores vacíos o nulos', () => {
-    expect(limpiarRut('')).toBe('');
-    expect(limpiarRut(null)).toBe('');
-    expect(limpiarRut(undefined)).toBe('');
-  });
-});
-
-describe('formatearRut', () => {
-  test('agrega puntos de miles y el guión del dígito verificador', () => {
-    expect(formatearRut('111111111')).toBe('11.111.111-1');
-    expect(formatearRut('5654321')).toBe('565.432-1');
+  test('da false para una fecha de hace 30 años', () => {
+    expect(esMenorDeEdad(fechaHaceAnios(30))).toBe(false);
   });
 
-  test('deja tal cual un valor demasiado corto para formatear', () => {
-    expect(formatearRut('1')).toBe('1');
-    expect(formatearRut('')).toBe('');
+  test('da false si no hay fecha', () => {
+    expect(esMenorDeEdad('')).toBe(false);
   });
 });
 
-describe('validarRut', () => {
-  test('acepta RUTs con dígito verificador correcto', () => {
-    expect(validarRut('11.111.111-1')).toBe(true);
-    expect(validarRut('11111111-1')).toBe(true);
+describe('actualizarSeccionApoderado', () => {
+  beforeEach(() => {
+    construirFormulario();
   });
 
-  test('rechaza RUTs con dígito verificador incorrecto', () => {
-    expect(validarRut('12.345.678-9')).toBe(false);
+  test('muestra la sección y marca los campos como requeridos si es menor de edad', () => {
+    document.getElementById('fecha_nacimiento').value = fechaHaceAnios(10);
+    actualizarSeccionApoderado(document.getElementById('form-postulacion'));
+
+    expect(document.getElementById('seccion-apoderado').style.display).toBe('');
+    expect(document.getElementById('apoderado_nombre').required).toBe(true);
+    expect(document.getElementById('apoderado_telefono').required).toBe(true);
+    expect(document.getElementById('apoderado_correo').required).toBe(true);
   });
 
-  test('rechaza valores vacíos, incompletos o no numéricos', () => {
-    expect(validarRut('')).toBe(false);
-    expect(validarRut('1')).toBe(false);
-    expect(validarRut('abc-d')).toBe(false);
-  });
-});
+  test('oculta la sección y limpia los campos si es mayor de edad', () => {
+    document.getElementById('apoderado_nombre').value = 'Algo que quedó escrito antes';
+    document.getElementById('fecha_nacimiento').value = fechaHaceAnios(30);
+    actualizarSeccionApoderado(document.getElementById('form-postulacion'));
 
-describe('normalizarEspacios', () => {
-  test('recorta y colapsa espacios repetidos', () => {
-    expect(normalizarEspacios('  Juana   Pérez  ')).toBe('Juana Pérez');
-  });
-
-  test('no falla con valores vacíos o nulos', () => {
-    expect(normalizarEspacios('')).toBe('');
-    expect(normalizarEspacios(null)).toBe('');
-  });
-});
-
-// new Date(2026, 10, 2) usa el constructor en hora local (noviembre es el mes 10, base 0),
-// a diferencia de new Date('2026-11-02') que se interpreta en UTC y se corre un día en Chile.
-describe('calcularEdad', () => {
-  test('calcula bien cuando ya pasó el cumpleaños este año', () => {
-    expect(calcularEdad('2000-01-01', new Date(2026, 10, 2))).toBe(26);
-  });
-
-  test('calcula bien cuando el cumpleaños todavía no llega este año', () => {
-    expect(calcularEdad('2000-12-31', new Date(2026, 10, 2))).toBe(25);
-  });
-
-  test('da 18 el mismo día del cumpleaños número 18', () => {
-    expect(calcularEdad('2008-11-02', new Date(2026, 10, 2))).toBe(18);
-  });
-
-  test('da 17 un día antes del cumpleaños número 18', () => {
-    expect(calcularEdad('2008-11-03', new Date(2026, 10, 2))).toBe(17);
-  });
-});
-
-describe('fechaMaximaPara18Anios', () => {
-  test('devuelve la fecha de hoy menos 18 años, en formato YYYY-MM-DD', () => {
-    expect(fechaMaximaPara18Anios(new Date(2026, 10, 2))).toBe('2008-11-02');
-  });
-});
-
-describe('normalizarTelefono', () => {
-  test('agrega +56 a un celular chileno de 9 dígitos sin prefijo', () => {
-    expect(normalizarTelefono('912345678')).toBe('+56912345678');
-  });
-
-  test('deja un número que ya trae +56', () => {
-    expect(normalizarTelefono('+56 9 1234 5678')).toBe('+56912345678');
-  });
-
-  test('deja igual un número que no calza con el patrón chileno', () => {
-    expect(normalizarTelefono('+1 212 555 0100')).toBe('+12125550100');
+    expect(document.getElementById('seccion-apoderado').style.display).toBe('none');
+    expect(document.getElementById('apoderado_nombre').required).toBe(false);
+    expect(document.getElementById('apoderado_nombre').value).toBe('');
   });
 });
 
@@ -156,6 +111,15 @@ describe('initFormPostulacion', () => {
     expect(campoRut.value).toBe('11.111.111-1');
   });
 
+  test('muestra la sección del apoderado al cambiar a una fecha de menor de edad', () => {
+    initFormPostulacion();
+    const campoFecha = document.getElementById('fecha_nacimiento');
+    campoFecha.value = fechaHaceAnios(10);
+    campoFecha.dispatchEvent(new Event('change'));
+
+    expect(document.getElementById('seccion-apoderado').style.display).toBe('');
+  });
+
   test('no envía la petición si el formulario es inválido', () => {
     initFormPostulacion();
     document.getElementById('form-postulacion').dispatchEvent(new Event('submit', { cancelable: true }));
@@ -176,26 +140,18 @@ describe('initFormPostulacion', () => {
     expect(mensaje.textContent).toContain('RUT');
   });
 
-  test('no envía la petición si quien postula es menor de 18 años', () => {
+  test('no envía la petición de un menor de edad si faltan los datos del apoderado', () => {
     initFormPostulacion();
-    llenarFormularioValido();
-    const hoy = new Date();
-    document.getElementById('fecha_nacimiento').value = (hoy.getFullYear() - 10) + '-01-01';
+    llenarFormularioValido({ fechaNacimiento: fechaHaceAnios(10) });
+    // No se llenan los campos de apoderado; checkValidity() debe fallar porque quedaron required.
+    actualizarSeccionApoderado(document.getElementById('form-postulacion'));
 
     document.getElementById('form-postulacion').dispatchEvent(new Event('submit', { cancelable: true }));
 
     expect(global.fetch).not.toHaveBeenCalled();
-    const mensaje = document.getElementById('form-mensaje');
-    expect(mensaje.className).toContain('error');
-    expect(mensaje.textContent).toContain('18 años');
   });
 
-  test('pone el máximo del campo de fecha de nacimiento en hoy menos 18 años', () => {
-    initFormPostulacion();
-    expect(document.getElementById('fecha_nacimiento').max).toBe(fechaMaximaPara18Anios());
-  });
-
-  test('envía los datos normalizados y muestra el mensaje de éxito', async () => {
+  test('envía los datos normalizados de un voluntario(a) mayor de edad', async () => {
     global.fetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ ok: true })
@@ -211,14 +167,39 @@ describe('initFormPostulacion', () => {
     expect(global.fetch).toHaveBeenCalledTimes(1);
     const [, opciones] = global.fetch.mock.calls[0];
     const enviado = JSON.parse(opciones.body);
+    expect(enviado.tipo).toBe('voluntario');
     expect(enviado.nombre).toBe('Juana Pérez');
     expect(enviado.rut).toBe('11.111.111-1');
     expect(enviado.telefono).toBe('+56912345678');
     expect(enviado.correo).toBe('juana@example.com');
+    expect(enviado.apoderado_nombre).toBeUndefined();
 
     const mensaje = document.getElementById('form-mensaje');
     expect(mensaje.className).toContain('exito');
     expect(document.getElementById('form-enviar').disabled).toBe(false);
+  });
+
+  test('envía los datos de un Brigadier/Cadete menor de edad junto con los del apoderado', async () => {
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ ok: true })
+    });
+
+    initFormPostulacion();
+    llenarFormularioValido({ fechaNacimiento: fechaHaceAnios(10), apoderado: true });
+    actualizarSeccionApoderado(document.getElementById('form-postulacion'));
+
+    document.getElementById('form-postulacion').dispatchEvent(new Event('submit', { cancelable: true }));
+    await new Promise(process.nextTick);
+    await new Promise(process.nextTick);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [, opciones] = global.fetch.mock.calls[0];
+    const enviado = JSON.parse(opciones.body);
+    expect(enviado.tipo).toBe('cadete');
+    expect(enviado.apoderado_nombre).toBe('Pedro Pérez');
+    expect(enviado.apoderado_telefono).toBe('+56987654321');
+    expect(enviado.apoderado_correo).toBe('pedro@example.com');
   });
 
   test('muestra un mensaje de error si la petición falla', async () => {

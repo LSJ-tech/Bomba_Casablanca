@@ -1,71 +1,38 @@
-// Bomba Casablanca - formulario de postulación
+// Bomba Casablanca - formulario de postulación (voluntario/a 18+, o Brigadier/Cadete si es menor de edad)
 // NOTA: reemplazar POSTULACION_ENDPOINT con la URL real que entregue "wrangler deploy" del Worker en worker/.
 
 var POSTULACION_ENDPOINT = 'https://bombacasablanca-postulaciones.devquad.workers.dev';
 
-function limpiarRut(rut) {
-  return String(rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
+var normalizacion = typeof require === 'function' ? require('./normalizacion.js') : window;
+var formatearRut = normalizacion.formatearRut;
+var validarRut = normalizacion.validarRut;
+var calcularEdad = normalizacion.calcularEdad;
+var normalizarEspacios = normalizacion.normalizarEspacios;
+var normalizarTelefono = normalizacion.normalizarTelefono;
+
+function esMenorDeEdad(fechaNacimiento) {
+  return !!fechaNacimiento && calcularEdad(fechaNacimiento) < 18;
 }
 
-function formatearRut(rut) {
-  var limpio = limpiarRut(rut);
-  if (limpio.length < 2) return limpio;
-  var cuerpo = limpio.slice(0, -1);
-  var dv = limpio.slice(-1);
-  var cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  return cuerpoFormateado + '-' + dv;
-}
+function actualizarSeccionApoderado(form) {
+  var seccion = document.getElementById('seccion-apoderado');
+  var campoFecha = document.getElementById('fecha_nacimiento');
+  if (!seccion || !campoFecha) return;
 
-function validarRut(rut) {
-  var limpio = limpiarRut(rut);
-  if (limpio.length < 2) return false;
+  var camposApoderado = [
+    document.getElementById('apoderado_nombre'),
+    document.getElementById('apoderado_telefono'),
+    document.getElementById('apoderado_correo')
+  ];
 
-  var cuerpo = limpio.slice(0, -1);
-  var dv = limpio.slice(-1);
+  var esMenor = esMenorDeEdad(campoFecha.value);
+  seccion.style.display = esMenor ? '' : 'none';
 
-  if (!/^\d+$/.test(cuerpo)) return false;
-
-  var suma = 0;
-  var multiplo = 2;
-  for (var i = cuerpo.length - 1; i >= 0; i--) {
-    suma += parseInt(cuerpo.charAt(i), 10) * multiplo;
-    multiplo = multiplo < 7 ? multiplo + 1 : 2;
-  }
-  var resto = 11 - (suma % 11);
-  var dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : String(resto);
-  return dv === dvEsperado;
-}
-
-function normalizarEspacios(texto) {
-  return String(texto || '').trim().replace(/\s+/g, ' ');
-}
-
-function calcularEdad(fechaNacimiento, hoy) {
-  hoy = hoy || new Date();
-  var nacimiento = new Date(fechaNacimiento + 'T00:00:00');
-  var edad = hoy.getFullYear() - nacimiento.getFullYear();
-  var mesDiff = hoy.getMonth() - nacimiento.getMonth();
-  if (mesDiff < 0 || (mesDiff === 0 && hoy.getDate() < nacimiento.getDate())) {
-    edad--;
-  }
-  return edad;
-}
-
-function fechaMaximaPara18Anios(hoy) {
-  hoy = hoy || new Date();
-  var limite = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
-  var mes = String(limite.getMonth() + 1).padStart(2, '0');
-  var dia = String(limite.getDate()).padStart(2, '0');
-  return limite.getFullYear() + '-' + mes + '-' + dia;
-}
-
-function normalizarTelefono(telefono) {
-  var limpio = String(telefono || '').trim().replace(/[^\d+]/g, '');
-  // Si escribieron un celular chileno sin el +56 (9 dígitos empezando en 9), se lo agregamos.
-  if (/^9\d{8}$/.test(limpio)) {
-    limpio = '+56' + limpio;
-  }
-  return limpio;
+  camposApoderado.forEach(function (campo) {
+    if (!campo) return;
+    campo.required = esMenor;
+    if (!esMenor) campo.value = '';
+  });
 }
 
 function initFormPostulacion() {
@@ -78,7 +45,9 @@ function initFormPostulacion() {
   var campoFecha = document.getElementById('fecha_nacimiento');
 
   if (campoFecha) {
-    campoFecha.max = fechaMaximaPara18Anios();
+    campoFecha.addEventListener('change', function () {
+      actualizarSeccionApoderado(form);
+    });
   }
 
   if (campoRut) {
@@ -91,14 +60,6 @@ function initFormPostulacion() {
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-
-    var fechaNacimiento = document.getElementById('fecha_nacimiento').value;
-    if (fechaNacimiento && calcularEdad(fechaNacimiento) < 18) {
-      mensaje.className = 'form-mensaje visible error';
-      mensaje.textContent = 'Debes tener al menos 18 años para postular como voluntario(a). Si eres menor de edad, contáctanos para información sobre Brigadieres/Cadetes.';
-      document.getElementById('fecha_nacimiento').focus();
-      return;
-    }
 
     if (!form.checkValidity()) {
       form.reportValidity();
@@ -114,16 +75,26 @@ function initFormPostulacion() {
       return;
     }
 
+    var fechaNacimiento = document.getElementById('fecha_nacimiento').value;
+    var menor = esMenorDeEdad(fechaNacimiento);
+
     var datos = {
+      tipo: menor ? 'cadete' : 'voluntario',
       nombre: normalizarEspacios(document.getElementById('nombre').value),
       rut: rut,
-      fecha_nacimiento: document.getElementById('fecha_nacimiento').value,
+      fecha_nacimiento: fechaNacimiento,
       telefono: normalizarTelefono(document.getElementById('telefono').value),
       correo: normalizarEspacios(document.getElementById('correo').value).toLowerCase(),
       direccion: normalizarEspacios(document.getElementById('direccion').value),
       motivo: document.getElementById('motivo').value.trim(),
       website: document.getElementById('website').value
     };
+
+    if (menor) {
+      datos.apoderado_nombre = normalizarEspacios(document.getElementById('apoderado_nombre').value);
+      datos.apoderado_telefono = normalizarTelefono(document.getElementById('apoderado_telefono').value);
+      datos.apoderado_correo = normalizarEspacios(document.getElementById('apoderado_correo').value).toLowerCase();
+    }
 
     boton.disabled = true;
     boton.textContent = 'Enviando...';
@@ -143,6 +114,7 @@ function initFormPostulacion() {
         mensaje.className = 'form-mensaje visible exito';
         mensaje.textContent = 'Postulación enviada. Gracias por tu interés en Bomba Casablanca, nos pondremos en contacto contigo pronto.';
         form.reset();
+        actualizarSeccionApoderado(form);
       })
       .catch(function () {
         mensaje.className = 'form-mensaje visible error';
@@ -162,12 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     initFormPostulacion: initFormPostulacion,
-    limpiarRut: limpiarRut,
-    formatearRut: formatearRut,
-    validarRut: validarRut,
-    calcularEdad: calcularEdad,
-    fechaMaximaPara18Anios: fechaMaximaPara18Anios,
-    normalizarEspacios: normalizarEspacios,
-    normalizarTelefono: normalizarTelefono
+    esMenorDeEdad: esMenorDeEdad,
+    actualizarSeccionApoderado: actualizarSeccionApoderado
   };
 }

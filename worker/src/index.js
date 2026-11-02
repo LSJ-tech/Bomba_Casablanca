@@ -1,6 +1,8 @@
 // Worker de Bomba Casablanca - recibe postulaciones y las envía por correo vía Resend.
+// Un mismo formulario cubre dos casos: voluntario(a) (18+) y Brigadier(a)/Cadete (menor de edad, con apoderado).
 
 const REQUIRED_FIELDS = ['nombre', 'rut', 'fecha_nacimiento', 'telefono', 'correo', 'direccion', 'motivo'];
+const APODERADO_FIELDS = ['apoderado_nombre', 'apoderado_telefono', 'apoderado_correo'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function limpiarRut(rut) {
@@ -71,21 +73,50 @@ const CAMPOS_TABLA = [
   ['Dirección', 'direccion']
 ];
 
-function buildEmailHtml(data) {
+const CAMPOS_APODERADO = [
+  ['Nombre del apoderado/tutor', 'apoderado_nombre'],
+  ['Teléfono del apoderado/tutor', 'apoderado_telefono'],
+  ['Correo del apoderado/tutor', 'apoderado_correo']
+];
+
+function filaHtml(etiqueta, valor) {
+  return (
+    '<tr>' +
+    '<td style="padding:10px 16px;border-bottom:1px solid #e4ecf5;font-family:Arial,Helvetica,sans-serif;' +
+    'font-size:13px;font-weight:bold;color:#1d5fa6;white-space:nowrap;vertical-align:top;">' +
+    escapeHtml(etiqueta) +
+    '</td>' +
+    '<td style="padding:10px 16px;border-bottom:1px solid #e4ecf5;font-family:Arial,Helvetica,sans-serif;' +
+    'font-size:14px;color:#1c232b;">' +
+    escapeHtml(valor) +
+    '</td>' +
+    '</tr>'
+  );
+}
+
+function buildEmailHtml(data, esMenor) {
   const filasHtml = CAMPOS_TABLA.map(function (campo) {
-    return (
-      '<tr>' +
-      '<td style="padding:10px 16px;border-bottom:1px solid #e4ecf5;font-family:Arial,Helvetica,sans-serif;' +
-      'font-size:13px;font-weight:bold;color:#1d5fa6;white-space:nowrap;vertical-align:top;">' +
-      escapeHtml(campo[0]) +
-      '</td>' +
-      '<td style="padding:10px 16px;border-bottom:1px solid #e4ecf5;font-family:Arial,Helvetica,sans-serif;' +
-      'font-size:14px;color:#1c232b;">' +
-      escapeHtml(data[campo[1]]) +
-      '</td>' +
-      '</tr>'
-    );
+    return filaHtml(campo[0], data[campo[1]]);
   }).join('');
+
+  const filasApoderadoHtml = esMenor
+    ? CAMPOS_APODERADO.map(function (campo) {
+        return filaHtml(campo[0], data[campo[1]]);
+      }).join('')
+    : '';
+
+  const subtitulo = esMenor
+    ? 'Alguien completó el formulario de postulación del sitio como Brigadier(a)/Cadete (menor de edad).'
+    : 'Alguien completó el formulario de postulación del sitio como voluntario(a).';
+
+  const bloqueApoderado = esMenor
+    ? '<tr><td style="padding:4px 28px 4px;">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" ' +
+      'style="border:1px solid #e4ecf5;border-radius:4px;overflow:hidden;margin-top:8px;">' +
+      filasApoderadoHtml +
+      '</table>' +
+      '</td></tr>'
+    : '';
 
   return (
     '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>' +
@@ -109,7 +140,7 @@ function buildEmailHtml(data) {
     '<tr><td style="padding:24px 28px 8px;">' +
     '<h1 style="margin:0;font-family:Georgia,serif;font-size:20px;color:#0b2a4d;">Nueva postulación</h1>' +
     '<p style="margin:6px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4f5b68;">' +
-    'Alguien completó el formulario de postulación del sitio.</p>' +
+    subtitulo + '</p>' +
     '</td></tr>' +
 
     '<tr><td style="padding:12px 28px 4px;">' +
@@ -118,6 +149,8 @@ function buildEmailHtml(data) {
     filasHtml +
     '</table>' +
     '</td></tr>' +
+
+    bloqueApoderado +
 
     '<tr><td style="padding:16px 28px 24px;">' +
     '<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#1d5fa6;' +
@@ -131,20 +164,28 @@ function buildEmailHtml(data) {
     '<tr><td style="padding:16px 28px 24px;border-top:1px solid #e4ecf5;">' +
     '<p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#94806f;">' +
     'Enviado automáticamente desde el formulario de postulación de bombacasablanca.devquad.cl. ' +
-    'Responde este correo para contactar directamente a quien postuló.</p>' +
+    'Responde este correo para contactar directamente a quien postuló' + (esMenor ? ' (o a su apoderado/tutor)' : '') + '.</p>' +
     '</td></tr>' +
 
     '</table></td></tr></table></body></html>'
   );
 }
 
-function buildEmailText(data) {
+function buildEmailText(data, esMenor) {
   const lineas = CAMPOS_TABLA.map(function (campo) {
     return campo[0] + ': ' + data[campo[1]];
   });
+
+  const lineasApoderado = esMenor
+    ? '\n\nDatos del apoderado/tutor:\n' + CAMPOS_APODERADO.map(function (campo) {
+        return campo[0] + ': ' + data[campo[1]];
+      }).join('\n')
+    : '';
+
   return (
-    'Nueva postulación — Bomba Casablanca\n\n' +
+    'Nueva postulación — Bomba Casablanca' + (esMenor ? ' (Brigadier/Cadete, menor de edad)' : ' (voluntario/a)') + '\n\n' +
     lineas.join('\n') +
+    lineasApoderado +
     '\n\nMotivo de la postulación:\n' + data.motivo +
     '\n\n---\nEnviado automáticamente desde el formulario de postulación de bombacasablanca.devquad.cl.'
   );
@@ -189,8 +230,22 @@ export default {
       return jsonResponse({ ok: false, error: 'invalid_rut' }, 400, allowedOrigin);
     }
 
-    if (Number.isNaN(new Date(data.fecha_nacimiento).getTime()) || calcularEdad(data.fecha_nacimiento) < 18) {
-      return jsonResponse({ ok: false, error: 'underage' }, 400, allowedOrigin);
+    if (Number.isNaN(new Date(data.fecha_nacimiento + 'T00:00:00').getTime())) {
+      return jsonResponse({ ok: false, error: 'invalid_birthdate' }, 400, allowedOrigin);
+    }
+
+    // La edad real (no el "tipo" que mande el cliente) decide si hace falta apoderado/tutor.
+    const esMenor = calcularEdad(data.fecha_nacimiento) < 18;
+
+    if (esMenor) {
+      for (const field of APODERADO_FIELDS) {
+        if (!data[field] || !String(data[field]).trim()) {
+          return jsonResponse({ ok: false, error: 'missing_field', field: field }, 400, allowedOrigin);
+        }
+      }
+      if (!EMAIL_RE.test(data.apoderado_correo)) {
+        return jsonResponse({ ok: false, error: 'invalid_apoderado_email' }, 400, allowedOrigin);
+      }
     }
 
     const resendRes = await fetch('https://api.resend.com/emails', {
@@ -202,10 +257,10 @@ export default {
       body: JSON.stringify({
         from: env.FROM_EMAIL,
         to: env.TO_EMAIL,
-        reply_to: data.correo,
-        subject: 'Nueva postulación — Bomba Casablanca: ' + data.nombre,
-        html: buildEmailHtml(data),
-        text: buildEmailText(data)
+        reply_to: esMenor ? data.apoderado_correo : data.correo,
+        subject: (esMenor ? 'Nueva postulación Brigadier/Cadete' : 'Nueva postulación') + ' — Bomba Casablanca: ' + data.nombre,
+        html: buildEmailHtml(data, esMenor),
+        text: buildEmailText(data, esMenor)
       })
     });
 
