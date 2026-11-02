@@ -133,6 +133,17 @@ ul {
   flex-shrink: 0;
 }
 
+.brand-eyebrow {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--ivory);
+  opacity: 0.75;
+  display: block;
+  white-space: nowrap;
+}
+
 .brand-text h1 {
   font-family: var(--font-display);
   font-weight: 600;
@@ -162,6 +173,10 @@ ul {
 }
 
 @media (max-width: 480px) {
+  .brand-eyebrow {
+    font-size: 0.56rem;
+  }
+
   .brand-text h1 {
     font-size: 0.92rem;
   }
