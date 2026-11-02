@@ -91,6 +91,8 @@ export default {
     });
 
     if (!resendRes.ok) {
+      const detalle = await resendRes.text();
+      console.log('Resend rechazó el envío:', resendRes.status, detalle);
       return jsonResponse({ ok: false, error: 'send_failed' }, 502, allowedOrigin);
     }
 

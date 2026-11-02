@@ -3,7 +3,7 @@ main = "src/index.js"
 compatibility_date = "2026-11-02"
 
 [vars]
-FROM_EMAIL = "postulaciones@bombacasablanca.devquad.cl"
+FROM_EMAIL = "postulaciones-bombacasablanca@devquad.cl"
 TO_EMAIL = "logan.silva.jara@gmail.com"
 ALLOWED_ORIGIN = "https://bombacasablanca.devquad.cl"
 
