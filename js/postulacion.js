@@ -3,12 +3,67 @@
 
 var POSTULACION_ENDPOINT = 'https://bombacasablanca-postulaciones.devquad.workers.dev';
 
+function limpiarRut(rut) {
+  return String(rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
+}
+
+function formatearRut(rut) {
+  var limpio = limpiarRut(rut);
+  if (limpio.length < 2) return limpio;
+  var cuerpo = limpio.slice(0, -1);
+  var dv = limpio.slice(-1);
+  var cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return cuerpoFormateado + '-' + dv;
+}
+
+function validarRut(rut) {
+  var limpio = limpiarRut(rut);
+  if (limpio.length < 2) return false;
+
+  var cuerpo = limpio.slice(0, -1);
+  var dv = limpio.slice(-1);
+
+  if (!/^\d+$/.test(cuerpo)) return false;
+
+  var suma = 0;
+  var multiplo = 2;
+  for (var i = cuerpo.length - 1; i >= 0; i--) {
+    suma += parseInt(cuerpo.charAt(i), 10) * multiplo;
+    multiplo = multiplo < 7 ? multiplo + 1 : 2;
+  }
+  var resto = 11 - (suma % 11);
+  var dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : String(resto);
+  return dv === dvEsperado;
+}
+
+function normalizarEspacios(texto) {
+  return String(texto || '').trim().replace(/\s+/g, ' ');
+}
+
+function normalizarTelefono(telefono) {
+  var limpio = String(telefono || '').trim().replace(/[^\d+]/g, '');
+  // Si escribieron un celular chileno sin el +56 (9 dígitos empezando en 9), se lo agregamos.
+  if (/^9\d{8}$/.test(limpio)) {
+    limpio = '+56' + limpio;
+  }
+  return limpio;
+}
+
 function initFormPostulacion() {
   var form = document.getElementById('form-postulacion');
   if (!form) return;
 
   var mensaje = document.getElementById('form-mensaje');
   var boton = document.getElementById('form-enviar');
+  var campoRut = document.getElementById('rut');
+
+  if (campoRut) {
+    campoRut.addEventListener('blur', function () {
+      if (campoRut.value.trim()) {
+        campoRut.value = formatearRut(campoRut.value);
+      }
+    });
+  }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -18,13 +73,22 @@ function initFormPostulacion() {
       return;
     }
 
+    var rut = formatearRut(document.getElementById('rut').value);
+
+    if (!validarRut(rut)) {
+      mensaje.className = 'form-mensaje visible error';
+      mensaje.textContent = 'El RUT ingresado no es válido. Revísalo e intenta de nuevo.';
+      document.getElementById('rut').focus();
+      return;
+    }
+
     var datos = {
-      nombre: document.getElementById('nombre').value.trim(),
-      rut: document.getElementById('rut').value.trim(),
+      nombre: normalizarEspacios(document.getElementById('nombre').value),
+      rut: rut,
       fecha_nacimiento: document.getElementById('fecha_nacimiento').value,
-      telefono: document.getElementById('telefono').value.trim(),
-      correo: document.getElementById('correo').value.trim(),
-      direccion: document.getElementById('direccion').value.trim(),
+      telefono: normalizarTelefono(document.getElementById('telefono').value),
+      correo: normalizarEspacios(document.getElementById('correo').value).toLowerCase(),
+      direccion: normalizarEspacios(document.getElementById('direccion').value),
       motivo: document.getElementById('motivo').value.trim(),
       website: document.getElementById('website').value
     };
@@ -64,5 +128,12 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { initFormPostulacion: initFormPostulacion };
+  module.exports = {
+    initFormPostulacion: initFormPostulacion,
+    limpiarRut: limpiarRut,
+    formatearRut: formatearRut,
+    validarRut: validarRut,
+    normalizarEspacios: normalizarEspacios,
+    normalizarTelefono: normalizarTelefono
+  };
 }
